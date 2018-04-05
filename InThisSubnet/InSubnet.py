@@ -5,6 +5,7 @@ import optparse
 
 def ip_in_subnetwork(ip_address, subnetwork):
     ip_lower, ip_upper = subnetwork_to_ip_range(subnetwork)
+    print(ip_lower, ip_address, ip_upper)
     return ip_lower <= ip_address <= ip_upper
 
 
@@ -23,7 +24,7 @@ def subnetwork_to_ip_range(subnetwork):
     return ip_lower, ip_upper
 
 
-def readCommandLineFlags():
+def read_command_line_flags():
     parser = optparse.OptionParser()
     parser.add_option("-f", "--file", dest="input",
                       help="read IPs and subnet pairs from FILE", metavar="FILE")
@@ -36,21 +37,38 @@ def readCommandLineFlags():
     return parser.parse_args()
 
 
+def read_input_file_for_subnet_ip_pairs(options):
+    if options.output:
+        output = open(options.output, "w")
+    else:
+        output = open("output.txt", "w")
+    with open(options.input) as f:
+        for line in f:
+            ipSubnetPair = line.split(" ")
+            hexVal = int(ipSubnetPair[0],16)
+
+            if ip_in_subnetwork(hexVal, ipSubnetPair[1]):
+                output.write("The hexadecimal representation of the ip, " + ipSubnetPair[0] + ", is in the subnet " +ipSubnetPair[1])
+            else:
+                output.write("The hexadecimal representation of the ip, " + ipSubnetPair[0] + ", is NOT in the subnet " + ipSubnetPair[1])
+
+
+def ip_in_subnetwork_for_command_line_args(ip, subnet):
+    if ip_in_subnetwork(ip, subnet):
+        print("The hexadecimal representation of the ip,", options.ip, ",is in the subnet", options.subnet)
+    else:
+        print("The hexadecimal representation of the ip,", options.ip, ",is NOT in the subnet", options.subnet)
+
+
 def main():
-    options, args = readCommandLineFlags()
+    options, args = read_command_line_flags()
     # inputs = open("inputs.txt", "r")
     if options.ip and options.subnet:
-        if ip_in_subnetwork(options.ip, options.subnet):
-            print("The hexadecimal representation of the ip,", options.ip, "is in the subnet", options.subnet)
-        else:
-            print("The hexadecimal representation of the ip,", options.ip, "is NOT in the subnet", options.subnet)
+        ip_in_subnetwork_for_command_line_args(options.ip, options.subnet)
     elif options.input:
-        file = open(options.input, "r")
+        read_input_file_for_subnet_ip_pairs(options)
     else:
         print("Pass either a subnet and an ip or an input file with the subnet ip pairs")
-
-    ip_lower, ip_upper = subnetwork_to_ip_range("98.210.237.192/26")
-    print(ip_lower <= 0x62d2edff <= ip_upper)
 
 
 if __name__ == "__main__":
