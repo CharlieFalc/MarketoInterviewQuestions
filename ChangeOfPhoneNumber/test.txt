@@ -1,0 +1,21 @@
+Implement a script to update the phone number embedded in many of the store’s HTML pages.
+
+
+
+Over the years, the content authors have embedded the number on pages using a wide variety
+
+of punctuation (i.e., 800-438-4357 or 800-438-4357) while others used letter mnemonics (e.g.,
+
+800-GET-HELP).  Some inserted the US country code, with or without surrounding parentheses.
+
+The store has >50K HTML files, all under an NFS /var/www mount point shared by all servers.
+
+
+
+Your job is to replace all the old number with one version of the new number:  202-456-1414.
+
+The job needs to be done tonight, while the web servers are running.  You do NOT have to
+
+convert the new number to the existing format used on the page.
+
+ 
