@@ -9,15 +9,22 @@ def ip_in_subnetwork(ip_address, subnetwork):
 
 
 def subnetwork_to_ip_range(subnetwork):
-    fragments = subnetwork.split('/')
-    network_prefix = fragments[0]
-    netmask_len = int(fragments[1])
+    CIDRSubnet = subnetwork.split('/')
+    network_prefix = CIDRSubnet[0]
+    netmask_len = int(CIDRSubnet[1])
     ip_len = 32
 
+    # generate binary mask for the suffix and the prefix (netmask)
     suffix_mask = (1 << (ip_len - netmask_len)) - 1
     netmask = ((1 << ip_len) - 1) - suffix_mask
+
+    # find the hex value of the IPV4 address
     ip_hex = socket.inet_pton(socket.AF_INET, network_prefix)
+
+    # find the integer value of the min ip
     ip_lower = int(binascii.hexlify(ip_hex), 16) & netmask
+
+    # find the integer value of the max ip
     ip_upper = ip_lower + suffix_mask
 
     return ip_lower, ip_upper
@@ -56,19 +63,18 @@ def read_input_file_for_subnet_ip_pairs(options):
                         ipSubnetPair[1])
             except:
                 output.write(
-                    "encountered an error while determining if ip in subnet pair: " + ipSubnetPair[0] +", " +ipSubnetPair[1])
+                    "encountered an error while determining if ip in subnet: " + ipSubnetPair[0] +", " +ipSubnetPair[1])
 
 
 def ip_in_subnetwork_for_command_line_args(options):
     if ip_in_subnetwork(options.ip, options.subnet):
-        print("The hexadecimal representation of the ip,", options.ip, ",is in the subnet", options.subnet)
+        print("The hexadecimal representation of the ip,", options.ip, "is in the subnet", options.subnet)
     else:
-        print("The hexadecimal representation of the ip,", options.ip, ",is NOT in the subnet", options.subnet)
+        print("The hexadecimal representation of the ip,", options.ip, "is NOT in the subnet", options.subnet)
 
 
 def main():
     options, args = read_command_line_flags()
-    # inputs = open("inputs.txt", "r")
     if options.ip and options.subnet:
         ip_in_subnetwork_for_command_line_args(options)
     elif options.input:
